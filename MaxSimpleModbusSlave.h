@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef SimpleModbusSlave_h
-#define SimpleModbusSlave_h
+#ifndef MaxSimpleModbusSlave_h
+#define MaxSimpleModbusSlave_h
 
 #include <inttypes.h>
 #if defined(ARDUINO) && ARDUINO >= 100
@@ -31,10 +31,10 @@
 #define MODBUS_INFORMATIVE_NOT_FOR_US   4
 #define MODBUS_INFORMATIVE_RX_TIMEOUT   5
 
-class SimpleModbusSlave {
+class MaxSimpleModbusSlave {
 public:
-    SimpleModbusSlave(uint8_t slave);
-    SimpleModbusSlave(uint8_t slave, uint8_t tx_enable_pin);
+    MaxSimpleModbusSlave(uint8_t slave);
+    MaxSimpleModbusSlave(uint8_t slave, uint8_t tx_enable_pin);
     void setup(long baud);
     int loop(uint16_t *tab_reg, uint16_t nb_reg);
 private:
