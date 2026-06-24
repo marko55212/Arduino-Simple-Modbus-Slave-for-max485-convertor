@@ -243,7 +243,7 @@ static void reply(uint16_t *tab_reg, uint16_t nb_reg, uint8_t *req, uint8_t req_
 	send_msg(rsp, rsp_length);
 }
 
-int SimpleModbusSlave::loop(uint16_t* tab_reg, uint16_t nb_reg) {
+int MaxSimpleModbusSlave::loop(uint16_t* tab_reg, uint16_t nb_reg) {
 	int rc = 0;
 	uint8_t req[_MODBUSINO_RTU_MAX_ADU_LENGTH];
 
