@@ -40,14 +40,27 @@ enum {
 	_STEP_DATA
 };
 
+static int16_t _tx_enable_pin = -1;
+
 SimpleModbusSlave::SimpleModbusSlave(uint8_t slave) {
 	if ((slave >= 0) & (slave <= 247)) {
 		_slave = slave;
 	}
 }
 
+SimpleModbusSlave::SimpleModbusSlave(uint8_t slave, uint8_t tx_enable_pin) {
+	if ((slave >= 0) & (slave <= 247)) {
+		_slave = slave;
+	}
+	_tx_enable_pin = tx_enable_pin;
+}
+
 void SimpleModbusSlave::setup(long baud) {
 	Serial.begin(baud);
+	if (_tx_enable_pin >= 0) {
+		pinMode(_tx_enable_pin, OUTPUT);
+		digitalWrite(_tx_enable_pin, LOW);
+	}
 }
 
 // Check CRC of msg
@@ -67,7 +80,17 @@ static int build_response_basis(uint8_t slave, uint8_t function, uint8_t* rsp) {
 
 static void send_msg(uint8_t *msg, uint8_t msg_length) {
 	add_crc16(msg, msg_length);
+
+	if (_tx_enable_pin >= 0) {
+		digitalWrite(_tx_enable_pin, HIGH);
+	}
+	
 	Serial.write(msg, msg_length + 2);
+	Serial.flush(); 
+
+	if (_tx_enable_pin >= 0) {
+		digitalWrite(_tx_enable_pin, LOW);
+	}
 }
 
 static uint8_t response_exception(uint8_t slave, uint8_t function, uint8_t exception_code, uint8_t *rsp) {
@@ -80,13 +103,10 @@ static uint8_t response_exception(uint8_t slave, uint8_t function, uint8_t excep
 }
 
 static void flush(void) {
-	uint8_t i = 0;
-
 	// Wait a moment to receive the remaining garbage but avoid getting stuck
 	// because the line is saturated
-	while (Serial.available() && i++ < 10) {
-		Serial.flush();
-		delay(3);
+	while (Serial.available()){
+		Serial.read();
 	}
 }
 
@@ -110,10 +130,11 @@ static int receive(uint8_t *req, uint8_t _slave) {
 		// not that important so I rather to avoid millis() to apply the KISS
 		// principle (millis overflows after 50 days, etc) */
 		if (!Serial.available()) {
-			i = 0;
+			unsigned long start_timeout = millis();
 			while (!Serial.available()) {
-				if (++i == 10) return -1 - MODBUS_INFORMATIVE_RX_TIMEOUT; // Too late, bye
-				delay(1);
+				if ((millis() - start_timeout) >= 10) {
+					return -1 - MODBUS_INFORMATIVE_RX_TIMEOUT;
+				}
 			}
 		}
 
