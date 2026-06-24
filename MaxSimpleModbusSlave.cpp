@@ -18,7 +18,7 @@
 #include <pins_arduino.h>
 #endif
 
-#include "SimpleModbusSlave.h"
+#include "MaxSimpleModbusSlave.h"
 
 #define _MODBUS_RTU_SLAVE                0
 #define _MODBUS_RTU_FUNCTION             1
@@ -42,20 +42,20 @@ enum {
 
 static int16_t _tx_enable_pin = -1;
 
-SimpleModbusSlave::SimpleModbusSlave(uint8_t slave) {
+MaxSimpleModbusSlave::MaxSimpleModbusSlave(uint8_t slave) {
 	if ((slave >= 0) & (slave <= 247)) {
 		_slave = slave;
 	}
 }
 
-SimpleModbusSlave::SimpleModbusSlave(uint8_t slave, uint8_t tx_enable_pin) {
+MaxSimpleModbusSlave::MaxSimpleModbusSlave(uint8_t slave, uint8_t tx_enable_pin) {
 	if ((slave >= 0) & (slave <= 247)) {
 		_slave = slave;
 	}
 	_tx_enable_pin = tx_enable_pin;
 }
 
-void SimpleModbusSlave::setup(long baud) {
+void MaxSimpleModbusSlave::setup(long baud) {
 	Serial.begin(baud);
 	if (_tx_enable_pin >= 0) {
 		pinMode(_tx_enable_pin, OUTPUT);
