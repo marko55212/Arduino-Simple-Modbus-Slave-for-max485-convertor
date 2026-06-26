@@ -35,6 +35,7 @@ class MaxSimpleModbusSlave {
 public:
     MaxSimpleModbusSlave(uint8_t slave);
     MaxSimpleModbusSlave(uint8_t slave, uint8_t tx_enable_pin);
+    MaxSimpleModbusSlave(uint8_t slave, uint8_t tx_enable_pin, uint8_t led_pin);
     void setup(long baud);
     int loop(uint16_t *tab_reg, uint16_t nb_reg);
 private:
