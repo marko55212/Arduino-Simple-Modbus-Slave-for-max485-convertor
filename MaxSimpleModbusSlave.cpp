@@ -168,7 +168,21 @@ static int receive(uint8_t *req, uint8_t _slave) {
 		if (length_to_read == 0) {
 
 			if (req[_MODBUS_RTU_SLAVE] != _slave && req[_MODBUS_RTU_SLAVE] != MODBUS_BROADCAST_ADDRESS) {
-				flush();
+				unsigned long last_byte_time = micros(); // Фиксируем время получения текущего байта
+    
+    			// Запускаем бесконечный цикл, пока Мастер не допишет чужой пакет до конца
+   				 while (1) {
+        			if (Serial.available()) {
+            			Serial.read();             // Пожираем чужой байт и выбрасываем его
+            			last_byte_time = micros(); // Обнуляем таймаут, так как данные еще идут
+        			}
+        
+        			// Если в шине наступила тишина длительностью более 4.5 мс (стандартная пауза T3.5)
+        			if ((micros() - last_byte_time) > 4500) { 
+            			break; // Мастер гарантированно закончил слать чужой пакет, выходим из цикла
+        				}
+    				}
+				
 				return -1 - MODBUS_INFORMATIVE_NOT_FOR_US;
 			}
 
