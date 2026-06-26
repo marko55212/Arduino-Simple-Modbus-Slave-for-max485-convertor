@@ -41,6 +41,7 @@ enum {
 };
 
 static int16_t _tx_enable_pin = -1;
+static int16_t _led_pin = -1;
 
 MaxSimpleModbusSlave::MaxSimpleModbusSlave(uint8_t slave) {
 	if ((slave >= 0) & (slave <= 247)) {
