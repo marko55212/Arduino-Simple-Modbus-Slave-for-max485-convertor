@@ -55,11 +55,23 @@ MaxSimpleModbusSlave::MaxSimpleModbusSlave(uint8_t slave, uint8_t tx_enable_pin)
 	_tx_enable_pin = tx_enable_pin;
 }
 
+MaxSimpleModbusSlave::MaxSimpleModbusSlave(uint8_t slave, uint8_t tx_enable_pin, uint8_t led_pin) {
+	if ((slave >= 0) & (slave <= 247)) {
+		_slave = slave;
+	}
+	_tx_enable_pin = tx_enable_pin;
+	_led_pin = led_pin;
+}
+
 void MaxSimpleModbusSlave::setup(long baud) {
 	Serial.begin(baud);
 	if (_tx_enable_pin >= 0) {
 		pinMode(_tx_enable_pin, OUTPUT);
 		digitalWrite(_tx_enable_pin, LOW);
+	}
+	if (_led_pin >= 0) {
+		pinMode(_led_pin, OUTPUT);
+		digitalWrite(_led_pin, LOW);
 	}
 }
 
@@ -84,12 +96,18 @@ static void send_msg(uint8_t *msg, uint8_t msg_length) {
 	if (_tx_enable_pin >= 0) {
 		digitalWrite(_tx_enable_pin, HIGH);
 	}
+	if (_led_pin >= 0) {
+			digitalWrite(_led_pin, HIGH);
+	}
 	
 	Serial.write(msg, msg_length + 2);
 	Serial.flush(); 
 
 	if (_tx_enable_pin >= 0) {
 		digitalWrite(_tx_enable_pin, LOW);
+	}
+	if (_led_pin >= 0) {
+			digitalWrite(_led_pin, LOW);
 	}
 }
 
