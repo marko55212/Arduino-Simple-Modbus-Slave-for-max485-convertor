@@ -130,9 +130,9 @@ static int receive(uint8_t *req, uint8_t _slave) {
 		// not that important so I rather to avoid millis() to apply the KISS
 		// principle (millis overflows after 50 days, etc) */
 		if (!Serial.available()) {
-			unsigned long start_timeout = millis();
+			unsigned long start_timeout = micros();
 			while (!Serial.available()) {
-				if ((millis() - start_timeout) >= 10) {
+				if ((micros() - start_timeout) >= 10000) {
 					return -1 - MODBUS_INFORMATIVE_RX_TIMEOUT;
 				}
 			}
@@ -148,7 +148,7 @@ static int receive(uint8_t *req, uint8_t _slave) {
 
 		if (length_to_read == 0) {
 
-			if (req[_MODBUS_RTU_SLAVE] != _slave && req[_MODBUS_RTU_SLAVE != MODBUS_BROADCAST_ADDRESS]) {
+			if (req[_MODBUS_RTU_SLAVE] != _slave && req[_MODBUS_RTU_SLAVE] != MODBUS_BROADCAST_ADDRESS) {
 				flush();
 				return -1 - MODBUS_INFORMATIVE_NOT_FOR_US;
 			}
